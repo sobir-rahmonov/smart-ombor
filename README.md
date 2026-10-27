@@ -19,4 +19,4 @@ Ushbu loyiha **Django** freymvorki yordamida to'liq (Full-stack) ishlab chiqilga
 
 1. **Repozitoriyani yuklab oling:**
    ```bash
- git clone https://github.com/sobir-rahmonov/smart-ombor.git
+ #git clone https://github.com/sobir-rahmonov/smart-ombor.git
