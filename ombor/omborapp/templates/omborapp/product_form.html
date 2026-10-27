@@ -1,0 +1,21 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}Mahsulot{% endblock %}
+{% block page_title %}{% if object %}Mahsulotni tahrirlash{% else %}Yangi mahsulot{% endif %}{% endblock %}
+{% block page_subtitle %}Qoldiq kirim va chiqim orqali o'zgaradi{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {% include "omborapp/partials/field.html" with field=form.name %}
+    {% include "omborapp/partials/field.html" with field=form.category %}
+    {% include "omborapp/partials/field.html" with field=form.price %}
+    {% include "omborapp/partials/field.html" with field=form.min_quantity %}
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Saqlash</button>
+      <a href="{% url 'product_list' %}" class="btn btn-outline">Bekor qilish</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

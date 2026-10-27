@@ -1,0 +1,84 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}Mahsulotlar{% endblock %}
+{% block page_title %}Mahsulotlar{% endblock %}
+{% block page_subtitle %}Kam qolganlar jadvalda tepada ko'rinadi{% endblock %}
+
+{% block page_actions %}
+  <a href="{% url 'product_create' %}" class="btn btn-outline btn-lg">+ Yangi mahsulot</a>
+{% endblock %}
+
+{% block content %}
+<section class="card">
+  <div class="toolbar">
+    <div class="tabs" role="tablist" aria-label="Holat bo'yicha filtr">
+      <a href="?{{ tab_query }}" class="tab {% if not selected_status %}active{% endif %}">Hammasi <span class="tab-count">{{ all_count }}</span></a>
+      <a href="?status=low{% if tab_query %}&{{ tab_query }}{% endif %}" class="tab tab-low {% if selected_status == 'low' %}active{% endif %}">Kam qolgan <span class="tab-count">{{ low_count }}</span></a>
+      <a href="?status=ok{% if tab_query %}&{{ tab_query }}{% endif %}" class="tab {% if selected_status == 'ok' %}active{% endif %}">Yetarli <span class="tab-count">{{ ok_count }}</span></a>
+    </div>
+
+    <form method="get" class="toolbar-form">
+      {% if search %}<input type="hidden" name="q" value="{{ search }}">{% endif %}
+      {% if selected_status %}<input type="hidden" name="status" value="{{ selected_status }}">{% endif %}
+      <select name="category" class="form-select" aria-label="Kategoriya" onchange="this.form.submit()">
+        <option value="">Barcha kategoriyalar</option>
+        {% for category in categories %}
+          <option value="{{ category.pk }}" {% if selected_category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  {% if search %}
+    <p class="search-note">"{{ search }}" bo'yicha natijalar. <a href="{% url 'product_list' %}" class="link-strong">Tozalash</a></p>
+  {% endif %}
+
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Mahsulot</th><th class="num">Narxi</th><th class="num">Qoldiq</th>
+          <th>Holati</th><th class="num">Amallar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in product_list %}
+          <tr class="{% if product.is_low_stock %}row-low{% endif %}">
+            <td>
+              <div class="strong">{{ product.name }}</div>
+              <div class="muted small">{{ product.category.name }}</div>
+            </td>
+            <td class="num">{{ product.price|floatformat:"0g" }}</td>
+            <td class="num">
+              <div class="qty {% if product.is_low_stock %}text-warning{% endif %}">{{ product.quantity }}</div>
+              <div class="muted small">minimal {{ product.min_quantity }}</div>
+            </td>
+            <td>
+              {% if product.is_low_stock %}
+                <span class="badge badge-low">Kam qolgan</span>
+              {% else %}
+                <span class="badge badge-ok">Yetarli</span>
+              {% endif %}
+            </td>
+            <td class="num">
+              <div class="actions">
+                <a href="{% url 'movement_list' %}?new=in&product={{ product.pk }}" class="btn btn-outline btn-sm">+ Kirim</a>
+                <a href="{% url 'movement_list' %}?new=out&product={{ product.pk }}" class="btn btn-outline-danger btn-sm">− Chiqim</a>
+                <a href="{% url 'product_update' product.pk %}" class="icon-btn" aria-label="Tahrirlash">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                </a>
+                <a href="{% url 'product_delete' product.pk %}" class="icon-btn icon-btn-danger" aria-label="O'chirish">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="empty">Mahsulot topilmadi.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "omborapp/partials/pagination.html" %}
+</section>
+{% endblock %}

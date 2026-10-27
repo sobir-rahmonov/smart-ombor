@@ -1,0 +1,94 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}{% now "d.m.Y" %}{% endblock %}
+
+{% block content %}
+{% if low_stock_count %}
+  <div class="alert-banner">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+    <p><strong>{{ low_stock_count }} ta mahsulot kam qolgan.</strong> Ularni to'ldirishni unutmang.</p>
+    <a href="{% url 'product_list' %}?status=low" class="btn btn-dark">Ko'rish</a>
+  </div>
+{% endif %}
+
+<section class="stats">
+  <a href="{% url 'product_list' %}" class="stat-card">
+    <span class="stat-label"><span class="stat-icon icon-green">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+    </span>Mahsulotlar</span>
+    <strong class="stat-value">{{ products_count }}</strong>
+    <span class="stat-note">{{ categories_count }} ta kategoriyada</span>
+  </a>
+  <a href="{% url 'product_list' %}" class="stat-card">
+    <span class="stat-label"><span class="stat-icon icon-blue">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+    </span>Ombor qiymati</span>
+    <strong class="stat-value">{{ total_value|floatformat:"0g" }}</strong>
+    <span class="stat-note">so'm (narx × qoldiq)</span>
+  </a>
+  <a href="{% url 'product_list' %}?status=low" class="stat-card {% if low_stock_count %}stat-warning{% endif %}">
+    <span class="stat-label"><span class="stat-icon icon-amber">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+    </span>Kam qolganlar</span>
+    <strong class="stat-value {% if low_stock_count %}text-warning{% endif %}">{{ low_stock_count }}</strong>
+    <span class="stat-note">Minimal qoldiqdan past</span>
+  </a>
+  <a href="{% url 'movement_list' %}" class="stat-card">
+    <span class="stat-label"><span class="stat-icon icon-green">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg>
+    </span>Bugungi harakatlar</span>
+    <strong class="stat-value">{{ today_total }}</strong>
+    <span class="stat-note">{{ today_in }} ta kirim, {{ today_out }} ta chiqim</span>
+  </a>
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2 class="card-title">Kam qolganlar</h2>
+    <a href="{% url 'product_list' %}?status=low" class="link-strong">Hammasi</a>
+  </div>
+  {% for product in low_stock_products %}
+    <div class="low-item">
+      <div class="low-info">
+        <div class="low-name">{{ product.name }}</div>
+        <div class="low-note">{{ product.quantity }} dona qoldi · minimal {{ product.min_quantity }}</div>
+      </div>
+      <a href="{% url 'movement_list' %}?new=in&product={{ product.pk }}" class="btn btn-outline">+ Kirim</a>
+    </div>
+  {% empty %}
+    <p class="empty">Hammasi joyida, kam qolgan mahsulot yo'q.</p>
+  {% endfor %}
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2 class="card-title">Oxirgi harakatlar</h2>
+    <a href="{% url 'movement_list' %}" class="link-strong">Hammasi</a>
+  </div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Sana</th><th>Mahsulot</th><th>Turi</th>
+          <th class="num">Miqdor</th><th class="num">Jami</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in recent_movements %}
+          <tr>
+            <td class="muted">{{ m.created_at|date:"d.m H:i" }}</td>
+            <td class="strong">{{ m.product.name }}</td>
+            <td><span class="badge badge-{{ m.movement_type }}">{{ m.get_movement_type_display }}</span></td>
+            <td class="num strong">{{ m.quantity }}</td>
+            <td class="num">{{ m.total_price|floatformat:"0g" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="empty">Hali harakat yo'q.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

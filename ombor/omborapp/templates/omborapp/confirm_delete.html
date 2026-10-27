@@ -1,0 +1,28 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}O'chirish{% endblock %}
+{% block page_title %}"{{ object }}" ni o'chirasizmi?{% endblock %}
+{% block page_subtitle %}{% if warning %}{{ warning }}{% else %}Bu amalni qaytarib bo'lmaydi.{% endif %}{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+  {% if delete_stats %}
+    <div class="delete-stats">
+      {% for count, label in delete_stats %}
+        <div class="delete-stat">
+          <strong>{{ count }}</strong>
+          <span>{{ label }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-actions">
+      <a href="javascript:history.back()" class="btn btn-primary btn-lg">Yo'q, qoldirish</a>
+      <button type="submit" class="btn btn-outline-danger btn-lg">Ha, o'chirish</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

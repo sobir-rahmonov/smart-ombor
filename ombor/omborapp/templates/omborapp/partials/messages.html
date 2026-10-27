@@ -1,0 +1,10 @@
+{% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="message message-{{ message.tags }}" role="status">
+        <span>{{ message }}</span>
+        <button type="button" class="message-close" aria-label="Yopish">&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}

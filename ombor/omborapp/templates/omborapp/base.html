@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Ombor{% endblock %} | Ombor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'omborapp/css/style.css' %}">
+</head>
+<body>
+  <div class="layout">
+    {% include "omborapp/partials/sidebar.html" %}
+
+    <main class="content">
+      <div class="topbar">
+        <form method="get" action="{% url 'product_list' %}" class="search" role="search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="search" name="q" id="global-search" placeholder="Mahsulot nomini yozing..." aria-label="Mahsulot qidirish" autocomplete="off">
+          <kbd>/</kbd>
+        </form>
+        <a href="{% url 'movement_list' %}?new=in" class="btn btn-in btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 7L7 17M17 17H7V7"/></svg>
+          Kirim
+        </a>
+        <a href="{% url 'movement_list' %}?new=out" class="btn btn-out btn-lg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M7 7h10v10"/></svg>
+          Chiqim
+        </a>
+      </div>
+
+      {% block back_link %}{% endblock %}
+
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+          <p class="page-subtitle">{% block page_subtitle %}{% endblock %}</p>
+        </div>
+        <div class="page-actions">{% block page_actions %}{% endblock %}</div>
+      </header>
+
+      {% include "omborapp/partials/messages.html" %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <script src="{% static 'omborapp/js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

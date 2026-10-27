@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kirish | Ombor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'omborapp/css/style.css' %}">
+</head>
+<body>
+  <div class="login-page">
+    <section class="login-brand">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>
+        </div>
+        <span class="brand-name">Ombor</span>
+      </div>
+      <div>
+        <h1 class="login-heading">Ombor hisobi bir joyda</h1>
+        <p class="login-text">Mahsulotlar, narxlar va qoldiqlarni kuzating. Kirim va chiqimlar avtomatik hisoblanadi.</p>
+      </div>
+      <p class="login-note">Faqat administrator uchun</p>
+    </section>
+
+    <section class="login-form-side">
+      <form method="post" class="login-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <div>
+          <h2 class="login-title">Tizimga kirish</h2>
+          <p class="page-subtitle">Login va parolingizni kiriting</p>
+        </div>
+
+        {% if form.non_field_errors %}
+          <div class="alert alert-error">{{ form.non_field_errors.0 }}</div>
+        {% endif %}
+
+        {% include "omborapp/partials/field.html" with field=form.username %}
+        {% include "omborapp/partials/field.html" with field=form.password %}
+
+        <button type="submit" class="btn btn-primary btn-block">Kirish</button>
+      </form>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}Kategoriya{% endblock %}
+{% block page_title %}{% if object %}Kategoriyani tahrirlash{% else %}Yangi kategoriya{% endif %}{% endblock %}
+
+{% block content %}
+<section class="card form-card">
+  <form method="post">
+    {% csrf_token %}
+    {% include "omborapp/partials/field.html" with field=form.name %}
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Saqlash</button>
+      <a href="{% url 'category_list' %}" class="btn btn-outline">Bekor qilish</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

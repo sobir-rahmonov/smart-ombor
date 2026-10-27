@@ -1,0 +1,16 @@
+{% if is_paginated %}
+  <nav class="pagination" aria-label="Sahifalash">
+    <span class="pagination-info">{{ page_obj.start_index }}–{{ page_obj.end_index }} / {{ paginator.count }} ta</span>
+    <div class="pagination-links">
+      {% if page_obj.has_previous %}
+        <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.previous_page_number }}" class="page-link">Oldingi</a>
+      {% endif %}
+      {% for number in paginator.page_range %}
+        <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ number }}" class="page-link {% if number == page_obj.number %}active{% endif %}">{{ number }}</a>
+      {% endfor %}
+      {% if page_obj.has_next %}
+        <a href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page_obj.next_page_number }}" class="page-link">Keyingi</a>
+      {% endif %}
+    </div>
+  </nav>
+{% endif %}

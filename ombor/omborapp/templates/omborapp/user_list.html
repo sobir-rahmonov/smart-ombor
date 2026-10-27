@@ -1,0 +1,59 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}Foydalanuvchilar{% endblock %}
+{% block page_title %}Foydalanuvchilar{% endblock %}
+{% block page_subtitle %}Har bir mijoz faqat o'z ma'lumotlarini ko'radi{% endblock %}
+
+{% block page_actions %}
+  <a href="{% url 'user_create' %}" class="btn btn-primary btn-lg">+ Foydalanuvchi qo'shish</a>
+{% endblock %}
+
+{% block content %}
+<section class="card">
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Login</th><th>Roli</th><th class="num">Mahsulotlar</th>
+          <th>Qo'shilgan</th><th>Oxirgi kirish</th><th class="num">Amal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in user_list %}
+          <tr>
+            <td>
+              <div class="user-cell">
+                <span class="avatar avatar-sm">{{ u.username|first|upper }}</span>
+                <strong>{{ u.username }}</strong>
+              </div>
+            </td>
+            <td>
+              {% if u.is_superuser %}
+                <span class="badge badge-admin">Bosh admin</span>
+              {% else %}
+                <span class="badge badge-ok">Mijoz</span>
+              {% endif %}
+            </td>
+            <td class="num strong">{{ u.products_count }}</td>
+            <td class="muted">{{ u.date_joined|date:"d.m.Y" }}</td>
+            <td class="muted">{{ u.last_login|date:"d.m.Y, H:i"|default:"Hali kirmagan" }}</td>
+            <td class="num">
+              {% if u.is_superuser %}
+                <span class="muted small">Himoyalangan</span>
+              {% else %}
+                <a href="{% url 'user_delete' u.pk %}" class="btn btn-outline-danger btn-sm">O'chirish</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "omborapp/partials/pagination.html" %}
+</section>
+
+<div class="info-note">
+  <strong>Mijozga login va parolni o'zingiz yetkazing.</strong>
+  Ro'yxatdan o'tish sahifasi yo'q, shuning uchun siz bermagan odam tizimga kira olmaydi.
+</div>
+{% endblock %}

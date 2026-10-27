@@ -1,0 +1,110 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}Kirim / Chiqim{% endblock %}
+{% block page_title %}Kirim va chiqim{% endblock %}
+{% block page_subtitle %}Yangi harakatni 4 qadamda kiriting. Qoldiq avtomatik yangilanadi.{% endblock %}
+
+{% block content %}
+<div class="two-col">
+
+  <section class="card form-card" id="movement-card">
+    <form method="post" id="movement-form">
+      {% csrf_token %}
+
+      <div class="type-switch" role="radiogroup" aria-label="Harakat turi">
+        {% for radio in form.movement_type %}
+          <label class="type-option type-{{ radio.data.value }}">
+            {{ radio.tag }}
+            <span>{{ radio.choice_label }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      {% for error in form.movement_type.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+
+      <div class="form-group">
+        <label for="{{ form.product.id_for_label }}" class="form-label">1. Mahsulot</label>
+        {{ form.product }}
+        <div class="chips" id="product-info"></div>
+        {% for error in form.product.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.quantity.id_for_label }}" class="form-label">2. Miqdori</label>
+        <div class="stepper">
+          <button type="button" class="stepper-btn" data-step="-1" aria-label="Kamaytirish">−</button>
+          {{ form.quantity }}
+          <button type="button" class="stepper-btn" data-step="1" aria-label="Ko'paytirish">+</button>
+        </div>
+        {% for error in form.quantity.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.price.id_for_label }}" class="form-label">3. Narxi (1 dona, so'm)</label>
+        {{ form.price }}
+        <p class="form-help">Mahsulot narxi avtomatik qo'yiladi. Kerak bo'lsa o'zgartiring.</p>
+        {% for error in form.price.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="form-group">
+        <label for="{{ form.note.id_for_label }}" class="form-label">4. Izoh <span class="optional">(ixtiyoriy)</span></label>
+        {{ form.note }}
+        {% for error in form.note.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="summary" id="summary" hidden>
+        <div class="summary-row"><span>Jami summa</span><strong id="summary-total">0 so'm</strong></div>
+        <div class="summary-row"><span>Saqlangach qoldiq</span><strong id="summary-left">0 dona</strong></div>
+      </div>
+
+      <div class="form-actions form-actions-stack">
+        <button type="submit" class="btn btn-in btn-block btn-lg" id="submit-btn">
+          {% if form.movement_type.value == "out" %}Chiqimni saqlash{% else %}Kirimni saqlash{% endif %}
+        </button>
+        <a href="{% url 'dashboard' %}" class="btn btn-ghost btn-block">Bekor qilish</a>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <h2 class="card-title">Harakatlar tarixi</h2>
+      <div class="tabs" role="tablist" aria-label="Turi bo'yicha filtr">
+        <a href="{% url 'movement_list' %}" class="tab {% if not selected_type %}active{% endif %}">Hammasi</a>
+        <a href="?type=in" class="tab tab-in {% if selected_type == 'in' %}active{% endif %}">Kirim</a>
+        <a href="?type=out" class="tab tab-out {% if selected_type == 'out' %}active{% endif %}">Chiqim</a>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Sana</th><th>Mahsulot</th><th>Turi</th>
+            <th class="num">Miqdor</th><th class="num">Jami</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in stockmovement_list %}
+            <tr>
+              <td class="muted">{{ m.created_at|date:"d.m" }}<div class="small">{{ m.created_at|date:"H:i" }}</div></td>
+              <td>
+                <div class="strong">{{ m.product.name }}</div>
+                {% if m.note %}<div class="muted small">{{ m.note }}</div>{% endif %}
+              </td>
+              <td><span class="badge badge-{{ m.movement_type }}">{{ m.get_movement_type_display }}</span></td>
+              <td class="num strong">{{ m.quantity }}</td>
+              <td class="num">{{ m.total_price|floatformat:"0g" }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="5" class="empty">Hali harakat yo'q.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% include "omborapp/partials/pagination.html" %}
+  </section>
+
+</div>
+
+{{ products_data|json_script:"products-data" }}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "omborapp/base.html" %}
+
+{% block title %}Yangi foydalanuvchi{% endblock %}
+{% block page_title %}Yangi foydalanuvchi{% endblock %}
+{% block page_subtitle %}Mijoz uchun login va parol yarating{% endblock %}
+
+{% block back_link %}
+  <a href="{% url 'user_list' %}" class="back-link">← Foydalanuvchilar</a>
+{% endblock %}
+
+{% block content %}
+<div class="two-col two-col-form">
+  <section class="card form-card">
+    <form method="post">
+      {% csrf_token %}
+      {% include "omborapp/partials/field.html" with field=form.username %}
+      {% include "omborapp/partials/field.html" with field=form.password1 %}
+      {% include "omborapp/partials/field.html" with field=form.password2 %}
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-lg">Hisob yaratish</button>
+        <a href="{% url 'user_list' %}" class="btn btn-outline btn-lg">Bekor qilish</a>
+      </div>
+    </form>
+  </section>
+
+  <aside class="card side-note">
+    <h2 class="card-title">Bilib qo'ying</h2>
+    <ul>
+      <li>Yangi hisob <strong>bo'sh ombor</strong> bilan boshlanadi.</li>
+      <li>Mijoz <strong>faqat o'zi qo'shgan</strong> ma'lumotlarni ko'radi.</li>
+      <li>Login va parolni mijozga <strong>o'zingiz yetkazing</strong>.</li>
+      <li>Mijoz Foydalanuvchilar bo'limini <strong>ko'rmaydi</strong>.</li>
+    </ul>
+  </aside>
+</div>
+{% endblock %}
