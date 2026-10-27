@@ -1,0 +1,14 @@
+asgiref==3.13.0
+distlib==0.4.3
+dj-database-url==3.1.2
+Django==6.1.2
+filelock==4.1.0
+gunicorn==26.2.0
+packaging==26.3
+platformdirs==4.12.4
+python-discovery==1.6.2
+sqlparse==0.6.0
+tzdata==2026.5
+virtualenv==21.14.6
+virtualenvwrapper-win==1.2.7
+whitenoise==6.12.0
