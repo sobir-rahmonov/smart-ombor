@@ -1,9 +1,14 @@
+from datetime import timedelta
 from decimal import Decimal
 
 from django.db import transaction
 from django.db.models import DecimalField, F, Sum
+from django.db.models.functions import TruncDate
+from django.utils import timezone
 
 from .models import Category, Product, StockMovement
+
+WEEKDAY_LABELS = ["Du", "Se", "Ch", "Pa", "Ju", "Sh", "Ya"]
 
 
 class InsufficientStockError(Exception):
@@ -59,3 +64,42 @@ def delete_user_with_data(user):
     Product.objects.filter(owner=user).delete()
     Category.objects.filter(owner=user).delete()
     user.delete()
+
+
+def get_weekly_movements(owner, days=7):
+    """Oxirgi kunlar bo'yicha kirim va chiqim miqdori (grafik uchun)."""
+    today = timezone.localdate()
+    start = today - timedelta(days=days - 1)
+
+    rows = (
+        StockMovement.objects.filter(product__owner=owner, created_at__date__gte=start)
+        .annotate(day=TruncDate("created_at"))
+        .values("day", "movement_type")
+        .annotate(total=Sum("quantity"))
+    )
+    totals = {(row["day"], row["movement_type"]): row["total"] for row in rows}
+
+    movement_type = StockMovement.MovementType
+    result = []
+    for offset in range(days):
+        day = start + timedelta(days=offset)
+        result.append(
+            {
+                "label": WEEKDAY_LABELS[day.weekday()],
+                "in_qty": totals.get((day, movement_type.IN), 0),
+                "out_qty": totals.get((day, movement_type.OUT), 0),
+            }
+        )
+
+    max_value = max((max(d["in_qty"], d["out_qty"]) for d in result), default=0) or 1
+    for item in result:
+        item["in_percent"] = _bar_percent(item["in_qty"], max_value)
+        item["out_percent"] = _bar_percent(item["out_qty"], max_value)
+    return result
+
+
+def _bar_percent(value, max_value):
+    """Ustun balandligi foizda. Noldan katta qiymat ko'rinib turishi uchun kamida 4%."""
+    if value == 0:
+        return 0
+    return max(round(value / max_value * 100), 4)

@@ -17,7 +17,15 @@ from django.views.generic import (
 )
 from django.views.generic.edit import FormMixin
 
-from .forms import CategoryForm, ProductForm, StockMovementForm, UserCreateForm
+from .forms import (
+    CategoryForm,
+    ProductForm,
+    StockMovementForm,
+    StyledLoginForm,
+    UserCreateForm,
+)
+from .models import Category, Product, StockMovement
+
 from .models import Category, Product, StockMovement
 from .services import (
     InsufficientStockError,
@@ -25,6 +33,7 @@ from .services import (
     delete_user_with_data,
     get_low_stock_products,
     get_total_stock_value,
+    get_weekly_movements,
 )
 
 User = get_user_model()

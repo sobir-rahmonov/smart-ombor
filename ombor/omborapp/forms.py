@@ -1,6 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
-
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from .models import Category, Product, StockMovement
 
 
@@ -115,3 +114,13 @@ class UserCreateForm(StyledFormMixin, UserCreationForm):
         self.fields["password1"].help_text = "Kamida 8 ta belgi, faqat raqamdan iborat bo'lmasin."
         self.fields["password2"].label = "Parolni takrorlang"
         self.fields["password2"].help_text = ""
+
+
+
+class StyledLoginForm(StyledFormMixin, AuthenticationForm):
+    """Kirish formasi: bizning dizayn klasslari va o'zbekcha yozuvlar bilan."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].label = "Login"
+        self.fields["password"].label = "Parol"        
