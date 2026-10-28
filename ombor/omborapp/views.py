@@ -39,6 +39,11 @@ from .services import (
 User = get_user_model()
 
 
+from .forms import StyledLoginForm   # importlar qatorida bo'lishi shart
+
+
+
+
 # ---------- Umumiy yordamchi klasslar ----------
 
 class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -83,8 +88,13 @@ class SafeDeleteView(LoginRequiredMixin, OwnerQuerysetMixin, DeleteView):
 
 # ---------- Kirish ----------
 
+
+
+   
+
 class AdminLoginView(LoginView):
     template_name = "omborapp/login.html"
+    authentication_form = StyledLoginForm
     redirect_authenticated_user = True
 
 
